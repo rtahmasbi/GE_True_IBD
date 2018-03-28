@@ -121,59 +121,54 @@ void part::computation_haplotype(part ind1)
         {
             // We have assumed that the chromosomes are in different files.
             // TODO: we should check the root_pop
-
             if (vec[i].hap_index == vec[j].hap_index)
             {
                 unsigned long int sh_st = std::max(vec[i].st,vec[j].st);
                 unsigned long int sh_en = std::min(vec[i].en,vec[j].en);
                 unsigned long int sh_len = sh_en - sh_st + 1;
-                if (sh_len >= min_bp_dist)
+                if(sh_len >= min_bp_dist && sh_st <= sh_en)	// there is a shared part
                 {
-                  if(sh_st <= sh_en)	// there is a shared part
-                  {
-                      // first h_ID should be geq (>=) the second h_ID
-                      if(vec[i].h_ID >= vec[j].h_ID) // it is possible to compare i with i
-                      {
-                          writeInflatedOutFile << vec[i].h_ID << " ";
-                          writeInflatedOutFile << vec[j].h_ID << " ";
-                          writeInflatedOutFile << vec[i].chr  << " ";
-                          writeInflatedOutFile << sh_st << " ";
-                          writeInflatedOutFile << sh_en << " ";
-                          writeInflatedOutFile << sh_len << " "; // sh length
-                          writeInflatedOutFile << vec[i].hap << " ";
-                          writeInflatedOutFile << vec[j].hap << std::endl;
-                      }
-                      else // first h_ID should be geq (>=) the second h_ID
-                      {
-                          writeInflatedOutFile << vec[j].h_ID << " ";
-                          writeInflatedOutFile << vec[i].h_ID << " ";
-                          writeInflatedOutFile << vec[i].chr  << " ";
-                          writeInflatedOutFile << sh_st << " ";
-                          writeInflatedOutFile << sh_en << " ";
-                          writeInflatedOutFile << sh_len << " "; // sh length
-                          writeInflatedOutFile << vec[j].hap << " "; // the second hap
-                          writeInflatedOutFile << vec[i].hap << std::endl;  // the first hap
-                      }
+                    // first h_ID should be geq (>=) the second h_ID
+                    if(vec[i].h_ID >= vec[j].h_ID) // it is possible to compare i with i
+                    {
+                        writeInflatedOutFile << vec[i].h_ID << " ";
+                        writeInflatedOutFile << vec[j].h_ID << " ";
+                        writeInflatedOutFile << vec[i].chr  << " ";
+                        writeInflatedOutFile << sh_st << " ";
+                        writeInflatedOutFile << sh_en << " ";
+                        writeInflatedOutFile << sh_len << " "; // sh length
+                        writeInflatedOutFile << vec[i].hap << " ";
+                        writeInflatedOutFile << vec[j].hap << std::endl;
+                    }
+                    else // first h_ID should be geq (>=) the second h_ID
+                    {
+                        writeInflatedOutFile << vec[j].h_ID << " ";
+                        writeInflatedOutFile << vec[i].h_ID << " ";
+                        writeInflatedOutFile << vec[i].chr  << " ";
+                        writeInflatedOutFile << sh_st << " ";
+                        writeInflatedOutFile << sh_en << " ";
+                        writeInflatedOutFile << sh_len << " "; // sh length
+                        writeInflatedOutFile << vec[j].hap << " "; // the second hap
+                        writeInflatedOutFile << vec[i].hap << std::endl;  // the first hap
+                    }
+                }
+            } // if (vec[i].hap_index == vec[j].hap_index)
+            else if (vec[i].hap_index <  vec[j].hap_index) // there should not be any other sh part
+            {
+                break;
+            }
+            else // impossible
+            {
+                std::cout<<vec[i].sn_no<<" "<<vec[j].sn_no<<std::endl;
+                std::cout<<vec[i].h_ID<<" "<<vec[i].chr<<" "<<vec[i].hap<<" "<<vec[i].st<<" "<<vec[i].en<<" "<<vec[i].hap_index<<" "<<vec[i].root_hap<<std::endl;
+                std::cout<<vec[j].h_ID<<" "<<vec[j].chr<<" "<<vec[j].hap<<" "<<vec[j].st<<" "<<vec[j].en<<" "<<vec[j].hap_index<<" "<<vec[j].root_hap<<std::endl<<std::endl;
+                std::cerr<<"Error: wrong sorting... ERROR!!!"<<std::endl;
+                exit(0);
+            }
 
-                  }
-              } // if (vec[i].hap_index == vec[j].hap_index)
-              else if (vec[i].hap_index <  vec[j].hap_index) // there should not be any other sh part
-              {
-                  break;
-              }
-              else // impossible
-              {
-                  std::cout<<vec[i].sn_no<<" "<<vec[j].sn_no<<std::endl;
-                  std::cout<<vec[i].h_ID<<" "<<vec[i].chr<<" "<<vec[i].hap<<" "<<vec[i].st<<" "<<vec[i].en<<" "<<vec[i].hap_index<<" "<<vec[i].root_hap<<std::endl;
-                  std::cout<<vec[j].h_ID<<" "<<vec[j].chr<<" "<<vec[j].hap<<" "<<vec[j].st<<" "<<vec[j].en<<" "<<vec[j].hap_index<<" "<<vec[j].root_hap<<std::endl<<std::endl;
-                  std::cerr<<"Error: wrong sorting... ERROR!!!"<<std::endl;
-                  exit(0);
-              }
-
-            }	//Inner for loop closed
-        }
-
+        }	//Inner for loop closed
     }	//Outer for loop closed
+
 
     if (remove(fileName.c_str())!=0)
     {
